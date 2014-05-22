@@ -105,6 +105,7 @@ class CAS_Maestro {
 
  		$this->bypass_cas = defined('WPCAS_BYPASS') || isset($_GET['wp']) || isset($_GET['checkemail']) ||
  			(isset($_SESSION['not_using_CAS']) && $_SESSION['not_using_CAS'] == true);
+		
 		$this->init(!$this->bypass_cas);
 	} 
  
@@ -149,7 +150,6 @@ class CAS_Maestro {
 				 * Filters and actions registration
 				 */		
 				add_filter('authenticate', array(&$this, 'validate_login'), 30, 3);
-				add_action('wp_logout', array(&$this, 'process_logout'));
 				add_filter('login_url', array(&$this, 'bypass_reauth'));
 				add_action('lost_password', array(&$this, 'disable_function'));
 				add_action('retrieve_password', array(&$this, 'disable_function'));
@@ -162,6 +162,7 @@ class CAS_Maestro {
 			}
 
 		}
+		add_action('wp_logout', array(&$this, 'process_logout'));
 
 		//Register the language initialization
 		add_action('init' ,array(&$this, 'lang_init'));
@@ -367,8 +368,10 @@ class CAS_Maestro {
 	}
 
 	function process_logout() {
+		$not_using_cas =isset($_SESSION['not_using_CAS']) && $_SESSION['not_using_CAS'] == true;
 		session_destroy();
-		if( isset($_SESSION['not_using_CAS']) && $_SESSION['not_using_CAS'] == true )
+
+		if( $not_using_cas )
 			wp_redirect(home_url());
 		else
 		    phpCAS::logoutWithRedirectService(get_option('siteurl'));
