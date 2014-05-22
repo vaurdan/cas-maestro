@@ -100,8 +100,11 @@ class CAS_Maestro {
  		$this->phpcas_path = get_option('wpCAS_phpCAS_path',CAS_MAESTRO_PLUGIN_PATH.'phpCAS/CAS.php');
  		$this->allowed_users = get_option('wpCAS_allowed_users',array());	
 
- 		$this->bypass_cas = defined('WPCAS_BYPASS') || isset($_GET['cas_bypass']);
+ 		if(!isset($_SESSION))
+			session_start();
 
+ 		$this->bypass_cas = defined('WPCAS_BYPASS') || isset($_GET['wp']) || isset($_GET['checkemail']) ||
+ 			(isset($_SESSION['not_using_CAS']) && $_SESSION['not_using_CAS'] == true);
 		$this->init(!$this->bypass_cas);
 	} 
  
@@ -355,8 +358,10 @@ class CAS_Maestro {
 
 	function bypass_cas_login_form($url, $path, $orig_scheme) {
 		if($this->bypass_cas) {
-			if($path=='wp-login.php' && $orig_scheme == 'login_post')
-				return add_query_arg('cas_bypass', '', $url);
+			if( $path=='wp-login.php' ||
+				$path=='wp-login.php?action=register' ||
+				$path == 'wp-login.php?action=lostpassword' )  
+				return add_query_arg('wp', '', $url);
 		}
 		return $url;
 	}
