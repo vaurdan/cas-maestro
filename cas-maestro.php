@@ -129,7 +129,6 @@ class CAS_Maestro {
 			    intval($this->settings['server_port']) == 0)
 					$this->cas_configured = false;
 
-
 			if ($this->cas_configured) {
 				//If everything is alright, let's initialize the phpCAS client
 				phpCAS::client($this->settings['cas_version'], 
