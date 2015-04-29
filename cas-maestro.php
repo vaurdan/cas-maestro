@@ -440,7 +440,7 @@ class CAS_Maestro {
 				case 'settings':
 				default:
 					$settings_page = add_options_page(__('CAS Maestro', "CAS_Maestro"), 
-						__('CAS Maestro', "CAS_Maestro"), 8, 
+						__('CAS Maestro', "CAS_Maestro"), 'manage_options', 
 						'wpcas_settings', 
 						array(&$this,'admin_interface'));
 					break;
